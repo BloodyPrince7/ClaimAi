@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { X, Send, Mic, HelpCircle } from "lucide-react";
+import { X, Send, Sparkles, Languages } from "lucide-react";
 import { api } from "@/lib/api";
 import { ListenButton } from "@/components/voice/ListenButton";
 
@@ -13,10 +13,18 @@ export function AskDrawer({
   onClose: () => void;
   lang?: string;
 }) {
-  const [messages, setMessages] = useState<Array<{ sender: "user" | "bot"; text: string; citations?: any[] }>>([
+  const [currentLang, setCurrentLang] = useState(lang);
+  const [messages, setMessages] = useState<Array<{
+    sender: "user" | "bot";
+    text: string;
+    secondaryText?: string;
+    showSecondary?: boolean;
+    citations?: any[];
+  }>>([
     {
       sender: "bot",
       text: "नमस्ते! मैं क्लेममेट सहायक हूँ। आप अपनी बीमा पॉलिसी या अस्पताल के बिलों के बारे में किसी भी भारतीय भाषा में पूछ सकते हैं।",
+      secondaryText: "Hello! I am your ClaimMate assistant. You can ask anything about your insurance policy or hospital bills in any Indian language.",
       citations: []
     }
   ]);
@@ -26,7 +34,8 @@ export function AskDrawer({
   const suggestedQuestions = [
     "₹16,850 क्यों कटे?",
     "क्या दवाई का पूरा पैसा मिलेगा?",
-    "What is the room rent limit?"
+    "What is the room rent limit?",
+    "अगर मेरी शिकायत का समाधान न हो तो कहाँ अपील करूँ?"
   ];
 
   const handleSend = async (questionText?: string) => {
@@ -38,12 +47,17 @@ export function AskDrawer({
     setIsLoading(true);
 
     try {
-      const res = await api.askAssistant(q, lang);
+      const res = await api.askAssistant(q, currentLang);
+      const isEn = currentLang.startsWith("en");
+      const primary = isEn ? (res.answer || res.answer_localized) : (res.answer_localized || res.answer);
+      const secondary = isEn ? res.answer_localized : res.answer;
+
       setMessages((prev) => [
         ...prev,
         {
           sender: "bot",
-          text: lang === "hi-IN" ? res.answer_localized : res.answer,
+          text: primary,
+          secondaryText: secondary !== primary ? secondary : undefined,
           citations: res.citations
         }
       ]);
@@ -52,12 +66,20 @@ export function AskDrawer({
         ...prev,
         {
           sender: "bot",
-          text: "पॉलिसी क्लॉज 4.2 के अनुसार कमरे का किराया ₹5,000/दिन तक सीमित है। अधिक दर वाला कमरा लेने पर आनुपातिक कटौती लागू हुई है।"
+          text: "पॉलिसी क्लॉज 4.2 के अनुसार कमरे का किराया ₹5,00,000 बीमा राशि का 1% यानी ₹5,000/दिन तक सीमित है। डीलक्स कमरा लेने के कारण 62.5% आनुपातिक कटौती लागू हुई है।"
         }
       ]);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const toggleSecondary = (index: number) => {
+    setMessages((prev) =>
+      prev.map((m, idx) =>
+        idx === index ? { ...m, showSecondary: !m.showSecondary } : m
+      )
+    );
   };
 
   if (!isOpen) return null;
@@ -72,20 +94,44 @@ export function AskDrawer({
               क
             </div>
             <div>
-              <h3 className="font-serif font-bold text-base text-[#151513]">
-                Ask ClaimMate · सहायक
-              </h3>
+              <div className="flex items-center gap-1.5">
+                <h3 className="font-serif font-bold text-base text-[#151513]">
+                  Ask ClaimMate · सहायक
+                </h3>
+                <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-[#1E6B45]/10 text-[#1E6B45] text-[9px] font-mono font-semibold rounded-xs border border-[#1E6B45]/20">
+                  <Sparkles className="w-2.5 h-2.5" /> Sarvam-105B
+                </span>
+              </div>
               <span className="font-mono text-[10px] text-[#5C5A54] uppercase block">
-                Grounded in your policy clauses
+                Grounded in policy clauses & IRDAI rules
               </span>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="p-1.5 hover:bg-[#E9E4D8] border border-[#151513] rounded-xs text-[#151513]"
-          >
-            <X className="w-4 h-4" />
-          </button>
+
+          <div className="flex items-center gap-2">
+            {/* Quick Language Toggle */}
+            <select
+              value={currentLang}
+              onChange={(e) => setCurrentLang(e.target.value)}
+              className="text-[11px] font-mono bg-[#FBF9F4] border border-[#151513] px-1.5 py-1 rounded-xs cursor-pointer text-[#151513]"
+              title="Change chat language"
+            >
+              <option value="hi-IN">हिन्दी</option>
+              <option value="en-IN">English</option>
+              <option value="mr-IN">मराठी</option>
+              <option value="ta-IN">தமிழ்</option>
+              <option value="te-IN">తెలుగు</option>
+              <option value="bn-IN">বাংলা</option>
+              <option value="gu-IN">ગુજરાતી</option>
+            </select>
+            <button
+              onClick={onClose}
+              className="p-1.5 hover:bg-[#E9E4D8] border border-[#151513] rounded-xs text-[#151513]"
+              title="Close drawer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         {/* Message Stream */}
@@ -96,17 +142,28 @@ export function AskDrawer({
               className={`flex flex-col ${m.sender === "user" ? "items-end" : "items-start"}`}
             >
               <div
-                className={`max-w-[85%] p-3 rounded-xs text-xs font-sans leading-relaxed ${
+                className={`max-w-[88%] p-3 rounded-xs text-xs font-sans leading-relaxed ${
                   m.sender === "user"
                     ? "bg-[#151513] text-[#FBF9F4] font-medium"
                     : "bg-[#F3EFE6] text-[#151513] border border-[#D8D1C2] shadow-[2px_2px_0_#D8D1C2]"
                 }`}
               >
-                <p>{m.text}</p>
+                <p className="whitespace-pre-line">{m.showSecondary && m.secondaryText ? m.secondaryText : m.text}</p>
+
+                {/* Bilingual Toggle Button if secondary exists */}
+                {m.sender === "bot" && m.secondaryText && (
+                  <button
+                    onClick={() => toggleSecondary(idx)}
+                    className="mt-2 inline-flex items-center gap-1 text-[10px] font-mono text-[#5C5A54] hover:text-[#151513] underline underline-offset-2"
+                  >
+                    <Languages className="w-3 h-3" />
+                    {m.showSecondary ? "मूल भाषा में देखें" : "View in English / Hindi"}
+                  </button>
+                )}
 
                 {/* Grounded Citation Chips */}
                 {m.citations && m.citations.length > 0 && (
-                  <div className="mt-2.5 pt-2 border-t border-[#D8D1C2]/80 space-y-1">
+                  <div className="mt-2.5 pt-2 border-t border-[#D8D1C2]/80 space-y-1.5">
                     <span className="font-mono text-[9px] uppercase tracking-wider text-[#5C5A54] block">
                       VERIFIED POLICY CITATIONS
                     </span>
@@ -118,7 +175,7 @@ export function AskDrawer({
                         <span className="font-mono text-[#1E6B45] font-bold block">
                           📄 {c.clause} (Page {c.page})
                         </span>
-                        <span className="font-sans text-[#5C5A54] italic text-[10px]">
+                        <span className="font-sans text-[#5C5A54] italic text-[10px] block mt-0.5">
                           &ldquo;{c.quote}&rdquo;
                         </span>
                       </div>
@@ -128,13 +185,23 @@ export function AskDrawer({
 
                 {/* Voice listen button for bot response */}
                 {m.sender === "bot" && (
-                  <div className="mt-2 pt-1">
-                    <ListenButton text={m.text} lang={lang} label="Listen (सुनें)" />
+                  <div className="mt-2 pt-1 border-t border-[#D8D1C2]/40">
+                    <ListenButton text={m.showSecondary && m.secondaryText ? m.secondaryText : m.text} lang={currentLang} label="Listen (सुनें)" />
                   </div>
                 )}
               </div>
             </div>
           ))}
+
+          {/* Loading Indicator */}
+          {isLoading && (
+            <div className="flex items-start">
+              <div className="p-3 bg-[#F3EFE6] border border-[#D8D1C2] rounded-xs text-xs font-mono text-[#5C5A54] flex items-center gap-2">
+                <span className="inline-block w-2 h-2 rounded-full bg-[#B3261E] animate-pulse" />
+                <span>ClaimMate is thinking (Sarvam-105B)...</span>
+              </div>
+            </div>
+          )}
 
           {/* Quick Suggested Queries */}
           <div className="pt-3 border-t border-[#D8D1C2] space-y-1">
@@ -146,7 +213,8 @@ export function AskDrawer({
                 <button
                   key={sIdx}
                   onClick={() => handleSend(sq)}
-                  className="text-left font-serif text-xs text-[#B3261E] hover:underline underline-offset-2"
+                  disabled={isLoading}
+                  className="text-left font-serif text-xs text-[#B3261E] hover:underline underline-offset-2 disabled:opacity-50"
                 >
                   → {sq}
                 </button>
@@ -163,7 +231,8 @@ export function AskDrawer({
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
             placeholder="Ask in Hindi, English, Tamil..."
-            className="flex-1 text-xs p-2.5 bg-[#FBF9F4] border border-[#151513] font-sans outline-none focus:ring-1 focus:ring-[#151513]"
+            disabled={isLoading}
+            className="flex-1 text-xs p-2.5 bg-[#FBF9F4] border border-[#151513] font-sans outline-none focus:ring-1 focus:ring-[#151513] disabled:opacity-50"
           />
           <button
             onClick={() => handleSend()}

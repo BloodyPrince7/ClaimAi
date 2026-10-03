@@ -7,7 +7,7 @@ echo   ClaimMate: The Modern Bahi-Khata for Insurance
 echo ===================================================
 echo.
 echo [1/3] Starting Backend (FastAPI on Port 8000)...
-start "ClaimMate Backend" cmd /k "cd /d %~dp0backend && .venv\Scripts\activate && uvicorn app.main:app --reload --port 8000"
+start "ClaimMate Backend" cmd /k "cd /d %~dp0backend && .venv\Scripts\python.exe -m uvicorn app.main:app --reload --port 8000"
 
 echo.
 echo [2/3] Starting Frontend (Next.js on Port 3000)...

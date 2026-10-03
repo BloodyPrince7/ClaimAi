@@ -71,7 +71,8 @@ async def reason(
         kwargs = {
             "model": "sarvam-105b",
             "messages": messages,
-            "max_tokens": max_tokens
+            "max_tokens": max_tokens,
+            "reasoning_effort": None
         }
         if tools:
             kwargs["tools"] = tools

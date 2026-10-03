@@ -1,4 +1,28 @@
+import json
+import logging
+import re
+from app.config import settings
+from app.sarvam.client import client
 from app.sarvam.translate import translate_text
+
+logger = logging.getLogger(__name__)
+
+def extract_json(text: str) -> dict:
+    text = text.strip()
+    match = re.search(r'```(?:json)?\s*(\{.*?\})\s*```', text, re.DOTALL)
+    if match:
+        text = match.group(1)
+    try:
+        return json.loads(text)
+    except Exception:
+        first = text.find('{')
+        last = text.rfind('}')
+        if first != -1 and last != -1:
+            try:
+                return json.loads(text[first:last+1])
+            except Exception:
+                pass
+    return {}
 
 async def draft_appeal_package(
     claim_id: str,
@@ -7,8 +31,49 @@ async def draft_appeal_package(
 ) -> dict:
     """
     Appeal Drafter Agent: Generates bilingual grievance letters and escalation milestones.
+    Invokes Sarvam-105B when DEMO_MODE=false to draft bespoke legal appeals grounded in IRDAI circulars.
     """
-    letter_en = f"""To,
+    letter_en = None
+    letter_localized = None
+
+    if not settings.DEMO_MODE and client and settings.SARVAM_API_KEY and settings.SARVAM_API_KEY != "demo_sarvam_key":
+        try:
+            prompt = f"""You are ClaimMate's Senior Insurance Grievance Counsel.
+Draft a legally compelling, statutory grievance appeal letter for an Indian policyholder contesting an insurance repudiation.
+
+Context:
+- Insured / Policyholder: Ramesh Kumar
+- Insurer: Star Health & Allied Insurance Co. Ltd.
+- Claim Reference: {claim_id}
+- Insurer Rejection Ground: "{rejection_reason}"
+- Policy Inception: Continuously renewed for over 24 months without any break.
+- Regulatory Grounding: IRDAI Master Circulars on pre-existing waiting period completion and emergency hospitalization exemptions.
+
+Requirements:
+Return valid JSON with:
+{{
+  "letter_en": "Complete formal letter in English addressed to the Grievance Redressal Officer (GRO) citing grounds 1, 2, 3 and IRDAI 15-day SLA",
+  "letter_localized": "Accurate, formal translated letter in {'Hindi' if target_lang == 'hi-IN' else target_lang} following standard Indian grievance correspondence format"
+}}"""
+
+            resp = await client.chat.completions(
+                model="sarvam-105b",
+                messages=[{"role": "user", "content": prompt}],
+                response_format={"type": "json_object"},
+                reasoning_effort=None,
+                temperature=0.2,
+                max_tokens=2500
+            )
+            raw = resp.choices[0].message.content or ""
+            data = extract_json(raw)
+            letter_en = data.get("letter_en")
+            letter_localized = data.get("letter_localized")
+        except Exception as e:
+            logger.warning(f"Sarvam-105B appeal drafting failed: {e}. Fallback to statutory template.")
+
+    # Fallback template if live call was unavailable or skipped
+    if not letter_en:
+        letter_en = f"""To,
 The Grievance Redressal Officer (GRO),
 Star Health & Allied Insurance Co. Ltd.
 
@@ -29,8 +94,9 @@ Yours faithfully,
 Ramesh Kumar
 Policyholder"""
 
-    if target_lang == "hi-IN":
-        letter_localized = f"""सेवा में,
+    if not letter_localized:
+        if target_lang == "hi-IN":
+            letter_localized = f"""सेवा में,
 शिकायत निवारण अधिकारी (GRO),
 स्टार हेल्थ एंड अलाइड इंश्योरेंस कंपनी लिमिटेड
 
@@ -50,8 +116,8 @@ Policyholder"""
 भवदीय,
 रमेश कुमार
 पॉलिसीधारक"""
-    else:
-        letter_localized = await translate_text(letter_en, target_lang=target_lang)
+        else:
+            letter_localized = await translate_text(letter_en, target_lang=target_lang)
 
     escalation_steps = [
         {
