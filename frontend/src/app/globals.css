@@ -1,0 +1,97 @@
+@import "tailwindcss";
+
+:root {
+  --paper: #F3EFE6;
+  --paper-raised: #FBF9F4;
+  --paper-sunk: #E9E4D8;
+  --ink: #151513;
+  --graphite: #5C5A54;
+  --rule: #D8D1C2;
+  --bahi: #B3261E;
+  --ledger: #1E6B45;
+  --haldi: #C98A0B;
+  --highlight: #F6E27A;
+  --shadow-offset: 4px 4px 0 var(--ink);
+  --shadow-offset-sm: 2px 2px 0 var(--ink);
+}
+
+body {
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.55;
+  font-feature-settings: "tnum" 1;
+}
+
+/* Indic text line-height adjustment */
+:lang(hi), :lang(mr), :lang(ta), :lang(te), :lang(bn), :lang(kn), :lang(ml), :lang(gu), :lang(pa), :lang(or) {
+  line-height: 1.75;
+}
+
+/* Perforated receipt edge */
+.perforated-edge-top {
+  background: radial-gradient(circle, transparent, transparent 4px, var(--paper-raised) 5px);
+  background-size: 16px 10px;
+  background-position: bottom;
+  background-repeat: repeat-x;
+  height: 10px;
+}
+
+.perforated-edge-bottom {
+  background: radial-gradient(circle, transparent, transparent 4px, var(--paper-raised) 5px);
+  background-size: 16px 10px;
+  background-position: top;
+  background-repeat: repeat-x;
+  height: 10px;
+}
+
+/* Rubber Stamp Styling */
+.rubber-stamp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 2px 8px;
+  border: 2px solid currentColor;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px currentColor;
+  user-select: none;
+}
+
+.stamp-payable {
+  color: var(--ledger);
+  border-color: var(--ledger);
+  transform: rotate(-3deg);
+}
+
+.stamp-partial {
+  color: var(--haldi);
+  border-color: var(--haldi);
+  transform: rotate(-2deg);
+}
+
+.stamp-deducted {
+  color: var(--bahi);
+  border-color: var(--bahi);
+  transform: rotate(-4deg);
+}
+
+.stamp-needs-you {
+  color: var(--haldi);
+  border-color: var(--haldi);
+  transform: rotate(3deg);
+}
+
+.stamp-approved {
+  color: var(--ledger);
+  border-color: var(--ledger);
+  transform: rotate(-2deg);
+}
+
+/* Hairline rule */
+.hairline {
+  border-color: var(--rule);
+}
