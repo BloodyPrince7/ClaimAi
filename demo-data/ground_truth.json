@@ -1,0 +1,17 @@
+{
+  "case_1_health": {
+    "total_billed": 135150.0,
+    "room_rent_cap_applied": true,
+    "room_ratio": 0.625,
+    "total_payable": 100525.0,
+    "total_deducted": 34625.0,
+    "missed_pre_post_recovered": 12400.0,
+    "missing_documents": ["Attending Doctor Signature on Discharge Summary", "Prescription matching Pharmacy Bill #4"]
+  },
+  "case_2_motor": {
+    "repair_estimate": 24400.0,
+    "net_claim_payable": 18400.0,
+    "ncb_loss_3_years": 11400.0,
+    "recommendation": "CLAIM"
+  }
+}

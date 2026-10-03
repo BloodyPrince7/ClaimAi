@@ -1,0 +1,41 @@
+type: health
+display_name:
+  en: "Health Insurance"
+  hi: "स्वास्थ्य बीमा"
+  ta: "மருத்துவக் காப்பீடு"
+triggers:
+  - hospitalisation
+  - surgery
+  - day care treatment
+  - accident
+policy_schema: HealthPolicyRules
+checklist:
+  - id: doc_form
+    label: "IRDAI Claim Form Part A (filled & signed)"
+    required: true
+  - id: doc_ds
+    label: "Discharge Summary with doctor signature"
+    required: true
+  - id: doc_bills
+    label: "Final Hospital Bill with itemised break-up"
+    required: true
+  - id: doc_rx
+    label: "Doctor Prescriptions for all pharmacy medicines"
+    required: true
+  - id: doc_investigation
+    label: "Diagnostic test & lab reports (MRI, Blood, X-Ray)"
+    required: false
+deadlines:
+  - id: intimation
+    label: "Claim Intimation to Insurer/TPA"
+    within_hours: 48
+    from: "admission_date"
+  - id: submission
+    label: "Final Document Submission"
+    within_days: 30
+    from: "discharge_date"
+escalation:
+  - insurer_gro
+  - bima_bharosa
+  - insurance_ombudsman
+rules_module: "app.engine.health"

@@ -1,0 +1,19 @@
+type: crop
+display_name:
+  en: "PMFBY Crop Insurance"
+  hi: "प्रधानमंत्री फसल बीमा योजना"
+triggers:
+  - drought
+  - unseasonal rainfall
+  - pest attack
+checklist:
+  - id: khasra_khatauni
+    label: "Land Records (Khasra / Khatauni / 7-12 extract)"
+    required: true
+  - id: sowing_certificate
+    label: "Sowing Certificate from Patwari / Village Officer"
+    required: true
+escalation:
+  - district_agriculture_officer
+  - state_ombudsman
+rules_module: null

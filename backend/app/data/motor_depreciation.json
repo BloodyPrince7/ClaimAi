@@ -1,0 +1,35 @@
+{
+  "parts": {
+    "rubber": 0.50,
+    "plastic": 0.50,
+    "nylon": 0.50,
+    "tyres": 0.50,
+    "tubes": 0.50,
+    "batteries": 0.50,
+    "airbags": 0.50,
+    "fibreglass": 0.30,
+    "glass": 0.00
+  },
+  "metal_by_age": [
+    {"max_months": 6, "depreciation": 0.00},
+    {"max_months": 12, "depreciation": 0.05},
+    {"max_months": 24, "depreciation": 0.10},
+    {"max_months": 36, "depreciation": 0.15},
+    {"max_months": 48, "depreciation": 0.25},
+    {"max_months": 60, "depreciation": 0.35},
+    {"max_months": 120, "depreciation": 0.40},
+    {"max_months": 9999, "depreciation": 0.50}
+  ],
+  "ncb_slabs": [
+    {"claim_free_years": 0, "ncb_percent": 0},
+    {"claim_free_years": 1, "ncb_percent": 20},
+    {"claim_free_years": 2, "ncb_percent": 25},
+    {"claim_free_years": 3, "ncb_percent": 35},
+    {"claim_free_years": 4, "ncb_percent": 45},
+    {"claim_free_years": 5, "ncb_percent": 50}
+  ],
+  "compulsory_deductible": {
+    "sub_1500cc": 1000,
+    "above_1500cc": 2000
+  }
+}

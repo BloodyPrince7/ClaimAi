@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+backend/.venv/
+.venv/
+backend/claimmate.db
+claimmate.db
+backend/storage/
+storage/
+backend/.sarvam_cache/
+.sarvam_cache/
+.pytest_cache/
+
+# Node
+frontend/node_modules/
+node_modules/
+frontend/.next/
+.next/
+frontend/out/
+*.log

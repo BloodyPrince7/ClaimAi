@@ -1,0 +1,40 @@
+type: property
+display_name:
+  en: "Home & Property Insurance"
+  hi: "संपत्ति बीमा"
+triggers:
+  - fire damage
+  - flood or water inundation
+  - burglary
+checklist:
+  - id: fir_report
+    label: "Police FIR (for burglary / riot)"
+    required: true
+  - id: fire_brigade_report
+    label: "Fire Brigade Report (for fire incidents)"
+    required: true
+escalation:
+  - insurer_gro
+  - bima_bharosa
+  - insurance_ombudsman
+rules_module: null
+---
+type: crop
+display_name:
+  en: "PMFBY Crop Insurance"
+  hi: "प्रधानमंत्री फसल बीमा योजना"
+triggers:
+  - drought
+  - unseasonal rainfall
+  - pest attack
+checklist:
+  - id: khasra_khatauni
+    label: "Land Records (Khasra / Khatauni / 7-12 extract)"
+    required: true
+  - id: sowing_certificate
+    label: "Sowing Certificate from Patwari / Village Officer"
+    required: true
+escalation:
+  - district_agriculture_officer
+  - state_ombudsman
+rules_module: null

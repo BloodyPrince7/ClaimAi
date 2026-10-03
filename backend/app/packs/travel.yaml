@@ -1,0 +1,28 @@
+type: travel
+display_name:
+  en: "Travel Insurance"
+  hi: "यात्रा बीमा"
+triggers:
+  - flight delay
+  - baggage lost
+  - trip cancelled
+  - medical emergency abroad
+checklist:
+  - id: boarding_pass
+    label: "Boarding pass / e-ticket"
+    required: true
+  - id: airline_delay_letter
+    label: "Airline Delay Certificate"
+    required_if: "incident == flight_delay"
+  - id: pir_report
+    label: "Property Irregularity Report (PIR)"
+    required_if: "incident == baggage_lost"
+deadlines:
+  - id: intimation
+    label: "Intimation to insurer"
+    within_days: 7
+escalation:
+  - insurer_gro
+  - bima_bharosa
+  - insurance_ombudsman
+rules_module: null

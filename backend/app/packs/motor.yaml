@@ -1,0 +1,38 @@
+type: motor
+display_name:
+  en: "Motor Insurance (Own Damage)"
+  hi: "मोटर बीमा"
+  ta: "வாகனக் காப்பீடு"
+triggers:
+  - car accident
+  - collision
+  - vehicle damage
+  - scratch or dent
+policy_schema: MotorPolicyRules
+checklist:
+  - id: doc_rc
+    label: "Registration Certificate (RC Book / Smart Card)"
+    required: true
+  - id: doc_dl
+    label: "Driver's Licence of the person driving"
+    required: true
+  - id: doc_estimate
+    label: "Detailed Workshop Repair Estimate"
+    required: true
+  - id: doc_fir
+    label: "Police FIR (for third-party injury or severe crash)"
+    required: false
+deadlines:
+  - id: intimation
+    label: "Intimation of Accident before moving vehicle"
+    within_hours: 48
+    from: "accident_time"
+  - id: survey
+    label: "Physical / Digital Insurance Surveyor Inspection"
+    within_hours: 72
+    from: "intimation"
+escalation:
+  - insurer_gro
+  - bima_bharosa
+  - insurance_ombudsman
+rules_module: "app.engine.motor"

@@ -1,0 +1,19 @@
+type: life
+display_name:
+  en: "Life Insurance (Term Plan)"
+  hi: "जीवन बीमा"
+triggers:
+  - demise of policyholder
+  - terminal illness
+checklist:
+  - id: death_certificate
+    label: "Original Death Certificate"
+    required: true
+  - id: nominee_id
+    label: "Nominee KYC & Bank Passbook"
+    required: true
+escalation:
+  - insurer_gro
+  - bima_bharosa
+  - insurance_ombudsman
+rules_module: null
